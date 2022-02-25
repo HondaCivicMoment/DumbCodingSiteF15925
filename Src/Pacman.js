@@ -9,21 +9,21 @@ constructor(x,y,tileSize,velocity,TileSheet) {
     this.TileSheet=TileSheet;
     this.currentMovingDirection=null;
     this.requestMovingDirection=null;
-    this.pacmanAnimationTimerDefualt=10;
+    this.pacmanAnimationTimerDefualt=7;
     this.pacmanAnimationTimer=null;
     document.addEventListener("keydown", this.#keydown)
     this.#loadPacmanAssets();
     }
     draw(ctx){
         this.#move();
-        //this.#animate();
+        this.#animate();
         ctx.drawImage(
             this.pacmanAssets[this.pacmanAssetIndex],
             this.x,
             this.y,
             this.tileSize,
             this.tileSize
-            )
+            );
     }
     #loadPacmanAssets(){
         const pacmanAsset1= new Image();
@@ -83,9 +83,11 @@ constructor(x,y,tileSize,velocity,TileSheet) {
         if(this.TileSheet.didCollideWithEnvironment(this.x, this.y, this.currentMovingDirection)){
             return;
         }
-       /* else if(this.currentMovingDirection!=null&&this.pacmanAnimationTimer== null){
+        else if(this.currentMovingDirection !=null &&
+             this.pacmanAnimationTimer == null)
+        {
             this.pacmanAnimationTimer=this.pacmanAnimationTimerDefualt;
-        }*/
+        }
         switch(this.currentMovingDirection){
 
             case MovingDirection.up:
@@ -105,18 +107,21 @@ constructor(x,y,tileSize,velocity,TileSheet) {
                 break;
         }
     }
-    /*#animate(){
-        if(this.pacmanAnimationTimer==null){return;}
+    #animate(){
+        if(this.pacmanAnimationTimer==null){
+            return;
+        }
         this.pacmanAnimationTimer--;
         if(this.pacmanAnimationTimer==0){
             this.pacmanAnimationTimer = this.pacmanAnimationTimerDefualt;
             this.pacmanAssetIndex++;
             if(this.pacmanAssetIndex==this.pacmanAssets.length){
-                this.pacmanAssetIndex==0;
-            }
+                this.pacmanAssetIndex = 0;}
 
         }
-    }*/
+    }
 }
+
+
 
 
