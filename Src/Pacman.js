@@ -11,19 +11,31 @@ constructor(x,y,tileSize,velocity,TileSheet) {
     this.requestMovingDirection=null;
     this.pacmanAnimationTimerDefualt=7;
     this.pacmanAnimationTimer=null;
+    this.pacmanRotation=this.Rotation.right;
+    this.wakaSound = new Audio("../Sounds/sounds_waka.wav");
     document.addEventListener("keydown", this.#keydown)
     this.#loadPacmanAssets();
     }
+
+Rotation={right:0, left:2, down:1, up:3}
+
     draw(ctx){
         this.#move();
         this.#animate();
-        ctx.drawImage(
-            this.pacmanAssets[this.pacmanAssetIndex],
-            this.x,
-            this.y,
-            this.tileSize,
-            this.tileSize
-            );
+        this.#eatDot();
+        const size = this.tileSize/2;
+        ctx.save();
+        ctx.translate(this.x + size, this.y + size);
+        ctx.rotate((this.pacmanRotation * 90 * Math.PI)/180);
+        ctx.drawImage(this.pacmanAssets[this.pacmanAssetIndex],-size, -size, this.tileSize, this.tileSize);
+        ctx.restore();
+        // ctx.drawImage(
+        //     this.pacmanAssets[this.pacmanAssetIndex],
+        //     this.x,
+        //     this.y,
+        //     this.tileSize,
+        //     this.tileSize
+        //     );
     }
     #loadPacmanAssets(){
         const pacmanAsset1= new Image();
@@ -81,7 +93,7 @@ constructor(x,y,tileSize,velocity,TileSheet) {
             }
         }
         if(this.TileSheet.didCollideWithEnvironment(this.x, this.y, this.currentMovingDirection)){
-            return;
+            this.pacmanAnimationTimer=null; this.pacmanAssetIndex=1; return;
         }
         else if(this.currentMovingDirection !=null &&
              this.pacmanAnimationTimer == null)
@@ -92,18 +104,22 @@ constructor(x,y,tileSize,velocity,TileSheet) {
 
             case MovingDirection.up:
                 this.y -= this.velocity; 
+                this.pacmanRotation=this.Rotation.up;
                 break;
 
             case MovingDirection.down:
                 this.y += this.velocity; 
+                this.pacmanRotation=this.Rotation.down;
                 break;
             
             case MovingDirection.left:
-                this.x -= this.velocity; 
+                this.x -= this.velocity;
+                this.pacmanRotation=this.Rotation.left;
                 break;
 
             case MovingDirection.right:
                 this.x += this.velocity; 
+                this.pacmanRotation=this.Rotation.right;
                 break;
         }
     }
@@ -120,8 +136,11 @@ constructor(x,y,tileSize,velocity,TileSheet) {
 
         }
     }
+    #eatDot(){
+        if(this.TileSheet.eatDot(this.x, this.y)){
+            this.wakaSound.play();
+        }
+    }
 }
-
-
 
 

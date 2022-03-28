@@ -1,5 +1,6 @@
 import Pacman from"./Pacman.js";
 import MovingDirection from "./MovingDirection.js";
+import Enemy from "./Enemy.js";
 export default class TileSheet{
     constructor(tileSize){
         this.tileSize=tileSize;
@@ -32,18 +33,19 @@ export default class TileSheet{
     2 - blank
     3 - power orb
     4 - pacman 
+    5 - enemy
     */
     sheet = 
     [
         [1,1,1,1,1,1,1,1,1,1,1,1,1],//0
-        [1,0,0,0,0,0,1,0,0,0,0,0,1],//1
+        [1,5,0,0,0,0,1,0,0,0,0,0,1],//1
         [1,0,1,1,1,0,1,0,1,1,1,0,1],//2
         [1,0,3,1,0,0,0,0,0,1,1,0,1],//3
         [1,1,0,1,1,1,0,1,0,0,0,0,1],//4
         [1,1,0,0,0,0,4,1,1,1,1,0,1],//5
         [1,0,0,1,1,0,1,1,0,0,0,0,1],//6
         [1,0,1,1,1,0,1,1,0,1,1,0,1],//7
-        [1,0,0,0,0,0,0,0,0,0,0,3,1],//8
+        [1,0,0,0,0,0,0,0,5,0,0,3,1],//8
         [1,1,1,1,1,1,1,1,1,1,1,1,1],//9
     ]
     draw(ctx){
@@ -56,18 +58,20 @@ export default class TileSheet{
                     this.#drawbasicOrb(ctx, column, row, this.tileSize);
                 } else if(tile===3){
                     this.#drawpowerOrbOne(ctx, column, row, this.tileSize);
-                } else if(tile===2){
-                    this.#drawBlank(ctx, column, row, this.tileSize);
                 } else if(tile===4){
                     this.#drawbasicOrb(ctx, column, row, this.tileSize);
-                }
+                } 
+                    else{
+                        this.#drawBlank(ctx, column, row, this.tileSize);
+                    }
                 /*ctx.strokeStyle="yellow"
                 ctx.strokeRect(column* this.tileSize, row*this.tileSize, this.tileSize,this.tileSize);
             */}
         }
     }
     #drawBlank(ctx, column, row, size){
-        ctx.drawImage(this.Blank, column * this.tileSize, row * this.tileSize, size, size);
+       ctx.fillStyle ="black";
+       ctx.fillRect(column * this.tileSize, row * this.tileSize, size, size);
     }
     #drawBrick(ctx, column, row, size){
         ctx.drawImage(this.Brick, column * this.tileSize, row * this.tileSize, size, size);
@@ -94,11 +98,28 @@ export default class TileSheet{
         }
     }
 
+    getEnemies(velocity){
+        const enemies = [];
+        for(let row = 0; row < this.sheet.length; row++){
+            for(let column =0; column < this.sheet[row].length; column++){
+                const tile = this.sheet[row][column];
+                if(tile==5){
+                    this.sheet[row][column] = 0;
+                    enemies.push(new Enemy(column * this.tileSize, row * this.tileSize, this.tileSize, velocity, this));
+                }
+            }
+        }
+        return enemies;
+    }
+
     setCanvasSize(canvas){
         canvas.width=this.sheet[0].length*this.tileSize;
         canvas.height=this.sheet.length*this.tileSize;
     }
     didCollideWithEnvironment(x,y,direction){
+
+        if(direction==null){return;}
+        
         if(Number.isInteger(x/this.tileSize)&&Number.isInteger(y/this.tileSize)){
             let column=0;
             let row=0;
@@ -138,5 +159,16 @@ export default class TileSheet{
             }
         }
         return false;
+    }
+    eatDot(x,y){
+        const row = y/this.tileSize;
+        const column = x/this.tileSize;
+        if(Number.isInteger(row) && Number.isInteger(column)){
+            if(this.sheet[row][column]===0){
+                this.sheet[row][column]=2;
+                return true
+            }
+        }
+        return false
     }
 }
