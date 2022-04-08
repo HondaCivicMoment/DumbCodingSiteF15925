@@ -11,27 +11,44 @@ export default class Enemy{
 
         this.#loadImages();
 
-        this.movingDirection = Math.floor(Math.random() * Object.keys(MovingDirection).length);
+        this.MovingDirection = Math.floor(Math.random() * Object.keys(MovingDirection).length);
         this.directionTimerDefault = this.#random(10,50);
         this.directionTimer = this.directionTimerDefault;
     }
     draw(ctx){
         ctx.drawImage(this.image, this.x, this.y, this.tileSize, this.tileSize);
         this.#move();
+        this.#changeDirection();
+    }
+    #changeDirection(){
+        this.directionTimer--;
+        let newMoveDirection = null;
+        if(this.directionTimer==0){
+            this.directionTimer = this.directionTimerDefault;
+            newMoveDirection =Math.floor(Math.random()*Object.keys(MovingDirection).length);{
+                if(newMoveDirection != null && this.MovingDirection != newMoveDirection){
+                    if(Number.isInteger(this.x / this.tileSize)&&(Number.isInteger(this.y / this.tileSize))){
+                        if(!this.tileSheet.didCollideWithEnvironment(this.x, this.y, newMoveDirection)){
+                            this.MovingDirection = newMoveDirection;
+                        }
+                    }
+                }
+            }
+        }
     }
     #move(){
-        if(!this.tileSheet.didCollideWithEnvironment(this.x, this.y, this.movingDirection)){
-            switch (this.movingDirection){
-                case this.MovingDirection.up:
+        if(!this.tileSheet.didCollideWithEnvironment(this.x, this.y, this.MovingDirection)){
+            switch (this.MovingDirection){
+                case MovingDirection.up:
                     this.y -= this.velocity;
                     break;
-                case this.MovingDirection.down:
+                case MovingDirection.down:
                     this.y += this.velocity;
                     break;
-                case this.movingDirection.right:
+                case MovingDirection.right:
                     this.x += this.velocity;
                     break;
-                case this.MovingDirection.left:
+                case MovingDirection.left:
                     this.x -= this.velocity;
                     break;
             }
@@ -52,4 +69,5 @@ export default class Enemy{
 
         this.image = this.normalGhost1;
     }
+    
 }
