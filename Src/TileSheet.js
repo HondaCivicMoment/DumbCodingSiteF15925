@@ -26,6 +26,10 @@ export default class TileSheet{
         this.ghostWeak=new Image();
         this.ghostWeak.src="../Assets/GhostWeak.png";
 
+        this.powerOrb = this.powerOrbOne; 
+        this.powerOrbOneAnimationTimerDefault = 20;
+        this.powerOrbOneAnimationTimer = this.powerOrbOneAnimationTimerDefault;
+
     }
     /*
     0 - orb
@@ -57,7 +61,7 @@ export default class TileSheet{
                 } else if(tile===0){
                     this.#drawbasicOrb(ctx, column, row, this.tileSize);
                 } else if(tile===3){
-                    this.#drawpowerOrbOne(ctx, column, row, this.tileSize);
+                    this.#drawPowerOrb(ctx, column, row, this.tileSize);
                 } else if(tile===4){
                     this.#drawbasicOrb(ctx, column, row, this.tileSize);
                 } 
@@ -79,8 +83,13 @@ export default class TileSheet{
     #drawbasicOrb(ctx, column, row, size){
         ctx.drawImage(this.basicOrb, column * this.tileSize, row * this.tileSize, size, size);
     }
-    #drawpowerOrbOne(ctx, column, row, size){
-        ctx.drawImage(this.powerOrbOne, column * this.tileSize, row * this.tileSize, size, size);
+    #drawPowerOrb(ctx, column, row, size){
+        this.powerOrbOneAnimationTimer--;
+        if(this.powerOrbOneAnimationTimer===0){
+            this.powerOrbOneAnimationTimer = this.powerOrbOneAnimationTimerDefault;
+            if(this.powerOrb == this.powerOrbOne){this.powerOrb = this.basicOrb} else {this.powerOrb = this.powerOrbOne}
+        }
+        ctx.drawImage(this.powerOrb,column*size, row*size, size, size);
     }
     /*#drawBrick(ctx, column, row, size){
         ctx.drawImage(this.Brick, column * this.tileSize, row * this.tileSize, size, size);
