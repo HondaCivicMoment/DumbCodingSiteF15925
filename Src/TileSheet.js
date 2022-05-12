@@ -192,4 +192,10 @@ export default class TileSheet{
         }
         return false
     }
+    didWin(){
+        return this.#dotsLeft() === 0;
+    }
+    #dotsLeft(){
+        return this.sheet.flat().filter((tile) =>  tile === 0).length;
+    }
 }

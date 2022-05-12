@@ -94,5 +94,18 @@ export default class Enemy{
 
         this.image = this.normalGhost1;
     }
+    collideWith(pacman) {
+        const size = this.tileSize / 2;
+        if (
+          this.x < pacman.x + size &&
+          this.x + size > pacman.x &&
+          this.y < pacman.y + size &&
+          this.y + size > pacman.y
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
     
 }

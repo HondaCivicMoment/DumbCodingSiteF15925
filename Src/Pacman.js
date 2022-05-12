@@ -18,17 +18,21 @@ constructor(x,y,tileSize,velocity,TileSheet) {
     this.timers = [];
     this.wakaSound = new Audio("../Sounds/sounds_waka.wav");
     this.powerDotSFX = new Audio("../Sounds/sounds_power_dot.wav");
+    this.eatGhostSound = new Audio("../Sounds/sounds_eat_ghost.wav");
     document.addEventListener("keydown", this.#keydown)
     this.#loadPacmanAssets();
     }
 
 Rotation={right:0, left:2, down:1, up:3}
 
-    draw(ctx){
-        this.#move();
-        this.#animate();
+    draw(ctx, pause, enemies){
+        if(!pause){
+            this.#move();
+            this.#animate();
+        }
         this.#eatDot();
         this.#eatPowerDot();
+        this.#eatGhost(enemies);
         const size = this.tileSize/2;
         ctx.save();
         ctx.translate(this.x + size, this.y + size);
@@ -160,6 +164,15 @@ Rotation={right:0, left:2, down:1, up:3}
             this.timers.push(powerDotTimer);
             let powerDotAboutToExpireTimer=setTimeout(()=>{this.powerDotAboutToExpire=true; },1000*3);
             this.timers.push(powerDotAboutToExpireTimer);
+        }
+    }
+    #eatGhost(enemies){
+        if(this.powerDotActive){
+            const collideEnemies = enemies.filter((enemy) => enemy.collideWith(this));
+            collideEnemies.forEach((enemy)=>{
+                enemies.splice(enemies.indexOf(enemy), 1);
+                this.eatGhostSound.play();
+            });
         }
     }
 }
