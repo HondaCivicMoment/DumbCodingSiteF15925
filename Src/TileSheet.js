@@ -45,7 +45,7 @@ export default class TileSheet{
         [1,5,0,0,0,0,1,0,0,0,0,0,1],//1
         [1,0,1,1,1,0,1,0,1,1,1,0,1],//2
         [1,0,3,1,0,0,0,0,0,1,1,0,1],//3
-        [1,1,0,1,1,1,0,1,0,0,0,0,1],//4
+        [1,1,0,1,1,1,0,1,0,0,0,5,1],//4
         [1,1,0,0,0,0,4,1,1,1,1,0,1],//5
         [1,0,0,1,1,0,1,1,0,0,0,0,1],//6
         [1,0,1,1,1,0,1,1,0,1,1,0,1],//7
@@ -174,6 +174,18 @@ export default class TileSheet{
         const column = x/this.tileSize;
         if(Number.isInteger(row) && Number.isInteger(column)){
             if(this.sheet[row][column]===0){
+                this.sheet[row][column]=2;
+                return true
+            }
+        }
+        return false
+    }
+    eatPowerDot(x,y){
+        const row = y/this.tileSize;
+        const column = x/this.tileSize;
+        if(Number.isInteger(row) && Number.isInteger(column)){
+            const tile = this.sheet[row][column];
+            if(tile===3){
                 this.sheet[row][column]=2;
                 return true
             }

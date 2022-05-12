@@ -6,13 +6,18 @@ constructor(x,y,tileSize,velocity,TileSheet) {
     this.y=y;
     this.tileSize=tileSize;
     this.velocity=velocity;
+    this.powerDotActive = false;
+    this.powerDotAboutToExpire = false;
     this.TileSheet=TileSheet;
     this.currentMovingDirection=null;
     this.requestMovingDirection=null;
     this.pacmanAnimationTimerDefualt=7;
     this.pacmanAnimationTimer=null;
+    this.madeFirstMove = false;
     this.pacmanRotation=this.Rotation.right;
+    this.timers = [];
     this.wakaSound = new Audio("../Sounds/sounds_waka.wav");
+    this.powerDotSFX = new Audio("../Sounds/sounds_power_dot.wav");
     document.addEventListener("keydown", this.#keydown)
     this.#loadPacmanAssets();
     }
@@ -23,6 +28,7 @@ Rotation={right:0, left:2, down:1, up:3}
         this.#move();
         this.#animate();
         this.#eatDot();
+        this.#eatPowerDot();
         const size = this.tileSize/2;
         ctx.save();
         ctx.translate(this.x + size, this.y + size);
@@ -62,6 +68,7 @@ Rotation={right:0, left:2, down:1, up:3}
             if(this.currentMovingDirection==MovingDirection.down)
                 this.currentMovingDirection=MovingDirection.up
             this.requestMovingDirection=MovingDirection.up
+            this.madeFirstMove = true;
             
         }
         //down
@@ -69,20 +76,21 @@ Rotation={right:0, left:2, down:1, up:3}
             if(this.currentMovingDirection==MovingDirection.up)
                 this.currentMovingDirection=MovingDirection.down
             this.requestMovingDirection=MovingDirection.down
+            this.madeFirstMove = true;
         }
         //left
         if(event.keyCode==37){
             if(this.currentMovingDirection==MovingDirection.right)
                 this.currentMovingDirection=MovingDirection.left
-            
             this.requestMovingDirection=MovingDirection.left
+            this.madeFirstMove = true;
         }
         //right
         if(event.keyCode==39){
             if(this.currentMovingDirection==MovingDirection.left)
                 this.currentMovingDirection=MovingDirection.right
-            
             this.requestMovingDirection=MovingDirection.right
+            this.madeFirstMove = true;
         }
     }
     #move(){
@@ -137,8 +145,23 @@ Rotation={right:0, left:2, down:1, up:3}
         }
     }
     #eatDot(){
-        if(this.TileSheet.eatDot(this.x, this.y)){
+        if(this.TileSheet.eatDot(this.x, this.y)&&this.madeFirstMove){
             this.wakaSound.play();
         }
     }
+    #eatPowerDot(){
+        if(this.TileSheet.eatPowerDot(this.x, this.y)){
+            this.powerDotSFX.play();
+            this.powerDotActive = true;
+            this.powerDotAboutToExpire = false;
+            this.timers.forEach((timer) => clearTimeout(timer));
+            this.timers = [];
+            let powerDotTimer = setTimeout(() => {this.powerDotActive=false; this.powerDotAboutToExpire=false;},1000*6);
+            this.timers.push(powerDotTimer);
+            let powerDotAboutToExpireTimer=setTimeout(()=>{this.powerDotAboutToExpire=true; },1000*3);
+            this.timers.push(powerDotAboutToExpireTimer);
+        }
+    }
 }
+
+

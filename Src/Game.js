@@ -14,7 +14,10 @@ const enemies =tileSheet.getEnemies(velocity);
 function gameLoop(){
     tileSheet.draw(ctx);
     pacman.draw(ctx)
-    enemies.forEach((enemy) =>enemy.draw(ctx));
+    enemies.forEach((enemy) =>enemy.draw(ctx, pause(), pacman));
+}
+function pause(){
+    return !pacman.madeFirstMove;
 }
 tileSheet.setCanvasSize(canvas);
 setInterval(gameLoop,1000/75);
